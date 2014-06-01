@@ -3,7 +3,6 @@
 var nodemailer = require('nodemailer');
 var Browser = require('zombie');
 var smtpSettings = require('./smtp.json');
-console.log(smtpSettings);
 
 // How many minutes to wait between checks?
 var waitMinutes = 10;
@@ -34,6 +33,7 @@ browser.on('error', function(error) {
 });
 
 var parsePage = function () {
+	console.log('Checking for available boats at ' + new Date());
 	browser.visit(url, function() {
 		// Get all the items that could be rentable
 		var items = browser.queryAll('.EventListCalendarItemSelected');
@@ -44,10 +44,12 @@ var parsePage = function () {
 				// We found a rentable FS, check to see if we already saw this rentable date
 				var date = getDateFromHTML(items[i].innerHTML);
 				if (dateIsNew(date)) {
-					console.log('New date');
+					console.log('New boats available!');
 					lastDate = date;
 					// New date, send out an email!
 					sendNotice();
+				} else {
+					console.log('No new boats available');
 				}
 			}
 		}
