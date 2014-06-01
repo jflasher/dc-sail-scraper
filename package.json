@@ -1,0 +1,7 @@
+{
+  "name": "dc-sail-scraper",
+  "dependencies": {
+  	"zombie": "2.0.x",
+    "nodemailer": "0.6.x"
+  }
+}

@@ -1,0 +1,7 @@
+{
+	"host": "host_address",
+	"user": "foo",
+	"password": "foo_pw",
+	"from": "foo@foo.com",
+	"to": "foo@foo.com"
+}
