@@ -28,7 +28,7 @@ var parsePage = function () {
 	console.log('Checking for available boats at ' + new Date());
 	browser.visit(url, function() {
 		// Get all the items that could be rentable
-		var items = browser.queryAll('.EventListCalendarItemSelected');
+		var items = browser.queryAll('.EventListCalendarItemDefault');
 		for (var i = 0; i < items.length; i++) {
 			// Check for a Flying Scot
 			var text = items[i].textContent.trim();
