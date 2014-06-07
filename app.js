@@ -1,8 +1,8 @@
 'use strict';
 
-var nodemailer = require('nodemailer');
 var Browser = require('zombie');
 var smtpSettings = require('./smtp.json');
+var mailer = require('./mailer');
 
 // How many minutes to wait between checks?
 var waitMinutes = 10;
@@ -13,16 +13,8 @@ var lastDate = new Date('1/1/1970');
 // Our browser for parsing
 var browser = new Browser();
 
-// The mailer transport
-var smtpTransport = nodemailer.createTransport('SMTP', {
-    host: smtpSettings.host,
-    secureConnection: true,
-    port: 465,
-    auth: {
-        user: smtpSettings.user,
-        pass: smtpSettings.password
-    }
-});
+// Setup the mailer
+mailer.setup(smtpSettings);
 
 // The rental url
 var url = 'http://dcsail.org/rental-book';
@@ -74,11 +66,12 @@ var sendNotice = function () {
 	var mailOptions = {
     from: smtpSettings.from, // sender address
     to: smtpSettings.to, // list of receivers
-    subject: 'DC Sail Scraper - New boat'
+    subject: 'DC Sail Scraper - New boat',
+    text: 'http://dcsail.org/rental-book'
 	};
 
 	// send mail with defined transport object
-	smtpTransport.sendMail(mailOptions, function (error, response){
+	mailer.send(mailOptions, function (error, response) {
     if (error){
         console.log(error);
     } else {
