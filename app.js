@@ -1,5 +1,6 @@
 'use strict';
 
+var fs = require('fs');
 var Browser = require('zombie');
 var smtpSettings = require('./smtp.json');
 var mailer = require('./mailer');
@@ -7,8 +8,22 @@ var mailer = require('./mailer');
 // How many minutes to wait between checks?
 var waitMinutes = 10;
 
-// The last date we've seen with a rental, start with a date in the past
-var lastDate = new Date('1/1/1970');
+var saveLastDate = function (date) {
+	lastDate = date;
+	var data = { lastDate: date };
+	fs.writeFile(filePath, JSON.stringify(data));
+};
+
+// Set up the local file to hold last date value
+var lastDate;
+var filePath = './lastDate.json';
+if (fs.existsSync(filePath)) {
+	var json = JSON.parse(fs.readFileSync(filePath));
+	lastDate = new Date(json.lastDate);
+} else {
+	saveLastDate(new Date('1/1/1970'));
+}
+console.log(lastDate);
 
 // Our browser for parsing
 var browser = new Browser();
@@ -37,7 +52,7 @@ var parsePage = function () {
 				var date = getDateFromHTML(items[i].innerHTML);
 				if (dateIsNew(date)) {
 					console.log('New boats available!');
-					lastDate = date;
+					saveLastDate(date);
 					// New date, send out an email!
 					sendNotice();
 				} else {
@@ -59,6 +74,8 @@ var getDateFromHTML = function (html) {
 };
 
 var dateIsNew = function (date) {
+        console.log('current date: ' + date);
+        console.log('last date: ' + lastDate);
 	return date > lastDate;
 };
 
